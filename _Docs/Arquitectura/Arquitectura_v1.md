@@ -50,7 +50,7 @@ Encargada de gestionar las solicitudes HTTP (GET, POST, PUT, DELETE).
 
 ---
 
-### 🔹 3. Capa de Lógica de Negocio (Servicios)
+###  3. Capa de Lógica de Negocio (Servicios)
 
 Contiene las reglas del negocio y procesamiento de datos.
 
@@ -108,28 +108,34 @@ Encargada de la comunicación con la base de datos.
 
 ## Diagrama de despliegue
 
-deploymentDiagram
-    %% Nodo Cliente
-    node "Cliente\n(Navegador Web)" {
-        component "Frontend\nHTML + CSS + JavaScript\nBootstrap"
-    }
+```mermaid
 
-    %% Nodo Servidor de Aplicaciones
-    node "Servidor de Aplicaciones" {
-        component "API REST\nSpring Boot\n(Controladores)"
-        component "Lógica de Negocio\nSpring Boot\n(Servicios)"
-    }
+flowchart LR
 
-    %% Nodo Base de Datos
-    node "Servidor de Base de Datos" {
-        database "MySQL"
-    }
+    subgraph Cliente["Cliente (Navegador Web)"]
+        A["Frontend\nHTML + CSS + JavaScript\nBootstrap"]
+    end
 
-    %% Relaciones
-    "Frontend\nHTML + CSS + JavaScript\nBootstrap" --> "API REST\nSpring Boot\n(Controladores)" : HTTP/HTTPS
-    "API REST\nSpring Boot\n(Controladores)" --> "Lógica de Negocio\nSpring Boot\n(Servicios)"
-    "Lógica de Negocio\nSpring Boot\n(Servicios)" --> "MySQL" : JDBC
+    subgraph Servidor["Servidor de Aplicaciones"]
+        B["API REST\nSpring Boot\n(Controladores)"]
+        C["Lógica de Negocio\nSpring Boot\n(Servicios)"]
+    end
+
+    subgraph DB["Servidor de Base de Datos"]
+        D["MySQL"]
+    end
+
+    A -->|HTTP/HTTPS| B
+    B --> C
+    C -->|JDBC| D 
+```
+---
 
 ##  Recomendación Final
 
 Se recomienda utilizar un conjunto de tecnologías que el equipo pueda manejar adecuadamente, priorizando la simplicidad, la correcta implementación y el funcionamiento completo del sistema, en lugar de incorporar herramientas innecesarias que compliquen el desarrollo.
+
+---
+## Observaciones
+
+Tenemos en cuenta que probablemente no estamos escogiendo las tecnologias más optimas para desarrollar nuestro sistema de información justo en este momento, no obstante decidimos seguir este planteamiento teniendo en cuenta los temas desarrollado en la formación del tecnólogo.
