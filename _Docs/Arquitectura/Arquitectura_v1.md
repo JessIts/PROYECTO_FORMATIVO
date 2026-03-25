@@ -22,44 +22,23 @@ Encargada de la interacción con el usuario y consumo de la API REST.
 
 **Opciones:**
 
-* HTML, CSS y JavaScript
-* Bootstrap (para diseño responsivo)
-* Angular
 * React
+* Vite
+* TypeScript
+* TailwindCSS
 
-**Recomendación:**
-
-* Nivel básico: HTML + JavaScript + Bootstrap
-* Nivel intermedio/avanzado: Angular
 
 ---
 
-###  2. Capa de Aplicación (API REST / Controladores)
+###  2. Capa de Aplicación (Backend)
 
 Encargada de gestionar las solicitudes HTTP (GET, POST, PUT, DELETE).
 
 **Opciones:**
 
-* Java con Spring Boot
-* Node.js con Express
-* Python con Django REST Framework
-
-**Recomendación:**
-
-* Spring Boot (por facilidad de uso, integración y enfoque académico)
-
----
-
-###  3. Capa de Lógica de Negocio (Servicios)
-
-Contiene las reglas del negocio y procesamiento de datos.
-
-**Opciones:**
-
-* Implementación dentro del backend:
-
-  * En Spring Boot: clases con anotación @Service
-  * En Node.js: servicios separados
+* Fast API
+* Python
+* JWT
 
 **Buenas prácticas:**
 
@@ -70,7 +49,7 @@ Contiene las reglas del negocio y procesamiento de datos.
 
 ---
 
-###  4. Capa de Acceso a Datos (Persistencia)
+###  3. Capa de Acceso a Datos (DB)
 
 Encargada de la comunicación con la base de datos.
 
@@ -78,12 +57,8 @@ Encargada de la comunicación con la base de datos.
 
 * Bases de datos:
 
-  * MySQL
   * PostgreSQL
-
-**Recomendación:**
-
-* MySQL
+  * Docker Compose
 
 ---
 
@@ -98,9 +73,9 @@ Encargada de la comunicación con la base de datos.
 
 ##  Arquitectura Recomendada
 
-* Frontend: Angular o HTML + Bootstrap
-* Backend: Spring Boot
-* Base de datos: MySQL
+* Frontend: React + Vite
+* Backend: Fast API
+* Base de datos: PostgreSQL
 * Pruebas: Postman
 * Control de versiones: GitHub
 
@@ -111,23 +86,47 @@ Encargada de la comunicación con la base de datos.
 ```mermaid
 
 flowchart LR
-
+    %% =========================
+    %% CLIENTE
+    %% =========================
     subgraph Cliente["Cliente (Navegador Web)"]
-        A["Frontend\nHTML + CSS + JavaScript\nBootstrap"]
+        FE["Frontend\nReact + Vite\nTypeScript + TailwindCSS"]
     end
 
-    subgraph Servidor["Servidor de Aplicaciones"]
-        B["API REST\nSpring Boot\n(Controladores)"]
-        C["Lógica de Negocio\nSpring Boot\n(Servicios)"]
+    %% =========================
+    %% BACKEND PRINCIPAL
+    %% =========================
+    subgraph Backend_Principal["Servidor Backend Principal"]
+        BE1["API REST\nFastAPI (Python)\nJWT\nValidaciones\nReglas de negocio"]
     end
 
-    subgraph DB["Servidor de Base de Datos"]
-        D["MySQL"]
+    %% =========================
+    %% BACKEND RESPALDO (DOCKER)
+    %% =========================
+    subgraph Backend_Respaldo["Contenedores Docker (Respaldo)"]
+        BE2["Replica API REST\nFastAPI"]
+        BE3["Replica API REST\nFastAPI"]
     end
 
-    A -->|HTTP/HTTPS| B
-    B --> C
-    C -->|JDBC| D 
+    %% =========================
+    %% BASE DE DATOS
+    %% =========================
+    subgraph DB_Server["Servidor de Base de Datos"]
+        DB[(PostgreSQL\nDocker Container)]
+    end
+
+    %% =========================
+    %% RELACIONES
+    %% =========================
+    FE -->|HTTP/HTTPS| BE1
+
+    %% Uso de respaldo en caso crítico
+    FE -->|Alta carga / Falla| BE2
+    FE -->|Alta carga / Falla| BE3
+
+    BE1 --> DB
+    BE2 --> DB
+    BE3 --> DB
 ```
 ---
 
