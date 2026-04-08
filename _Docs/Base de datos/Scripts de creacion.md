@@ -1,84 +1,156 @@
 CREATE DATABASE sistema_SIHS;
 USE sistema_SIHS;
 
+-- =========================
+-- ROLES Y USUARIOS
+-- =========================
+CREATE TABLE roles (
+    idRol INT PRIMARY KEY AUTO_INCREMENT,
+    nombreRol VARCHAR(50) UNIQUE NOT NULL
+);
+
+CREATE TABLE usuarios (
+    idUsuario INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    estado ENUM('activo','inactivo') DEFAULT 'activo',
+    fechaRegistro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE usuario_rol (
+    idUsuario INT,
+    idRol INT,
+    PRIMARY KEY (idUsuario, idRol),
+    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario),
+    FOREIGN KEY (idRol) REFERENCES roles(idRol)
+);
+
+-- =========================
+-- ESTRUCTURA ACADÉMICA
+-- =========================
 CREATE TABLE coordinaciones (
-	idCoordinacion CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-	nombreCoordinacion VARCHAR(50) NOT NULL
+    idCoordinacion INT PRIMARY KEY AUTO_INCREMENT,
+    nombreCoordinacion VARCHAR(100)
 );
 
-CREATE TABLE programasDeFormacion (
-	idPrograma CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-	nombrePrograma VARCHAR(50) NOT NULL,
-	nivelDeFormacion ENUM ('tecnico','tecnologo','operario') NOT NULL,
-	tipoDeOferta ENUM ('abierta','cerrada') NOT NULL,
-	estado ENUM ('en formacion', 'finalizado') NOT NULL,
-	idCoordinacion CHAR(36) NOT NULL,
-	FOREIGN KEY (idCoordinacion) REFERENCES coordinaciones(idCoordinacion)
-);
-
-CREATE TABLE usuarios(
-	idUsuario CHAR(36) PRIMARY KEY DEFAULT (UUID()), 
-	nombresUsuario VARCHAR(100) NOT NULL,
-	apellidosUsuario VARCHAR(100) NOT NULL,
-	tipoDocumento ENUM ('CC','CE','PPT','TI'),
-	documentoUsuario VARCHAR(50) NOT NULL UNIQUE,
-	correoUsuario VARCHAR(50) NOT NULL,
-	telefonoUsuario VARCHAR(15) NOT NULL,
-	contrasenaUsuario VARCHAR(256) NOT NULL
+CREATE TABLE programas (
+    idPrograma INT PRIMARY KEY AUTO_INCREMENT,
+    nombrePrograma VARCHAR(100),
+    idCoordinacion INT,
+    FOREIGN KEY (idCoordinacion) REFERENCES coordinaciones(idCoordinacion)
 );
 
 CREATE TABLE fichas (
-	idFicha VARCHAR (50) PRIMARY KEY NOT NULL,
-	idPrograma CHAR(36) NOT NULL,
-	cantidadAprendices INT NOT NULL,
-	FOREIGN KEY (idPrograma) REFERENCES programasDeFormacion(idPrograma)
+    idFicha INT PRIMARY KEY AUTO_INCREMENT,
+    codigoFicha VARCHAR(50) UNIQUE,
+    idPrograma INT,
+    FOREIGN KEY (idPrograma) REFERENCES programas(idPrograma)
 );
 
-CREATE TABLE trimestre (
-	idTrimestre CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-	numeroTrimestre VARCHAR(10) NOT NULL,
-	fechaInicioTrimestre DATE NOT NULL,
-	fechaFinTrimestre DATE NOT NULL,
-	idPrograma CHAR(36) NOT NULL,
-	FOREIGN KEY (idPrograma) REFERENCES programasDeFormacion(idPrograma)
+CREATE TABLE trimestres (
+    idTrimestre INT PRIMARY KEY AUTO_INCREMENT,
+    nombre VARCHAR(20) NOT NULL,
+    fechaInicio DATE NOT NULL,
+    fechaFin DATE NOT NULL,
+    estado ENUM('planeado','activo','finalizado') DEFAULT 'planeado'
 );
 
-CREATE TABLE aprendices (
-	idAprendiz CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-	documentoUsuario VARCHAR(50) NOT NULL,
-	idFicha VARCHAR (50) NOT NULL,
-	FOREIGN KEY (documentoUsuario) REFERENCES usuarios(documentoUsuario),
-	FOREIGN KEY (idFicha) REFERENCES fichas(idFicha)
+-- =========================
+-- COMPETENCIAS / RESULTADOS / ACTIVIDADES
+-- =========================
+CREATE TABLE competencias_formacion (
+    idCompetencia INT PRIMARY KEY AUTO_INCREMENT,
+    codigo VARCHAR(50),
+    descripcion TEXT NOT NULL,
+    idPrograma INT NOT NULL,
+    FOREIGN KEY (idPrograma) REFERENCES programas(idPrograma)
 );
 
-CREATE TABLE instructores (
-	idInstructor CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-	documentoUsuario VARCHAR(50) NOT NULL,
-	especialidadInstructor VARCHAR(30) NOT NULL,
-	tipoDeContrato ENUM ('planta','contratista') NOT NULL,
-	FOREIGN KEY (documentoUsuario) REFERENCES usuarios(documentoUsuario)
+CREATE TABLE resultados_aprendizaje (
+    idResultado INT PRIMARY KEY AUTO_INCREMENT,
+    codigo VARCHAR(50),
+    descripcion TEXT NOT NULL,
+    idCompetencia INT NOT NULL,
+    FOREIGN KEY (idCompetencia)
+        REFERENCES competencias_formacion(idCompetencia)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
-CREATE TABLE ambientesDeFormacion (
-	idAmbiente CHAR(36) PRIMARY KEY DEFAULT (UUID()),
-	nombreAmbiente VARCHAR(20) NOT NULL,
-	tipoDeAmbiente ENUM ('Especial','Regular') NOT NULL,
-	sede ENUM ('1','2','3','4') NOT NULL
+CREATE TABLE actividades_aprendizaje (
+    idActividad INT PRIMARY KEY AUTO_INCREMENT,
+    codigo VARCHAR(50),
+    descripcion TEXT NOT NULL,
+    tipoActividad VARCHAR(80),
+    duracionMinutos INT,
+    idResultado INT NOT NULL,
+    FOREIGN KEY (idResultado)
+        REFERENCES resultados_aprendizaje(idResultado)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 );
 
-CREATE TABLE resultadosDeAprendizaje (
-	idResultadoDeAprendizaje VARCHAR (50) PRIMARY KEY NOT NULL,
-	idTrimestre CHAR(36) NOT NULL,
-	FOREIGN KEY (idTrimestre) REFERENCES trimestre(idTrimestre)
+-- =========================
+-- FICHA - USUARIO
+-- =========================
+CREATE TABLE ficha_usuario (
+    idFicha INT,
+    idUsuario INT,
+    PRIMARY KEY (idFicha, idUsuario),
+    FOREIGN KEY (idFicha) REFERENCES fichas(idFicha),
+    FOREIGN KEY (idUsuario) REFERENCES usuarios(idUsuario)
+);
+
+-- =========================
+-- SEDES Y AMBIENTES
+-- =========================
+CREATE TABLE sedes (
+    idSede INT PRIMARY KEY AUTO_INCREMENT,
+    nombreSede VARCHAR(100),
+    direccion VARCHAR(150),
+    tipoSede ENUM('principal','secundaria','alterna')
+);
+
+CREATE TABLE ambientes (
+    idAmbiente INT PRIMARY KEY AUTO_INCREMENT,
+    nombreAmbiente VARCHAR(50),
+    idSede INT,
+    FOREIGN KEY (idSede) REFERENCES sedes(idSede)
+);
+
+-- =========================
+-- JORNADAS
+-- =========================
+CREATE TABLE jornadas (
+    idJornada INT PRIMARY KEY AUTO_INCREMENT,
+    nombreJornada VARCHAR(50)
+);
+
+-- =========================
+-- HORARIOS
+-- =========================
+CREATE TABLE diasDeLaSemana (
+    idDia INT PRIMARY KEY AUTO_INCREMENT,
+    nombreDia VARCHAR(10) UNIQUE
 );
 
 CREATE TABLE horarios (
-	idHorario CHAR (36) NOT NULL PRIMARY KEY DEFAULT (UUID()),
-    idFicha JSON NOT NULL,
-    idInstructor JSON NOT NULL,
-    idAmbiente JSON NOT NULL,
-    dias JSON NOT NULL,
-    jornadas JSON NOT NULL,
-    idTrimestre JSON NOT NULL
+    idHorario INT PRIMARY KEY AUTO_INCREMENT,
+    horaInicio TIME,
+    horaFin TIME,
+    idJornada INT,
+    FOREIGN KEY (idJornada) REFERENCES jornadas(idJornada)
 );
--- nota: esta tabla "horarios" es mejor plantearla en una base de datos no relacional
+
+CREATE TABLE horario_dia (
+    idHorario INT,
+    idDia INT,
+    PRIMARY KEY (idHorario, idDia),
+    FOREIGN KEY (idHorario) REFERENCES horarios(idHorario),
+    FOREIGN KEY (idDia) REFERENCES diasDeLaSemana(idDia)
+);
+
+-- =========================
+-- PROGRAMACIÓN
+-- =========================
