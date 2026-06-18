@@ -64,7 +64,6 @@ def get_current_user(
     return usuario
 
 
-#permite un rol especifico
 def require_role(role_name: str):
 
     def role_checker(
@@ -87,7 +86,7 @@ def require_role(role_name: str):
 
     return role_checker
 
-#para permitir varios roles
+
 def require_roles(*roles_permitidos):
 
     def role_checker(

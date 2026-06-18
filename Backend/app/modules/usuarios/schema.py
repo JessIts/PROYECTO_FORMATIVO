@@ -9,7 +9,6 @@ class UsuarioCreate(BaseModel):
 
 
 class UsuarioResponse(BaseModel):
-    idUsuario: int
     nombre: str
     email: EmailStr
     estado: str
