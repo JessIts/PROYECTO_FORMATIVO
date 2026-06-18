@@ -9,7 +9,7 @@ from app.core.config import (
     ALGORITHM,
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
-
+import secrets
 
 pwd_context = CryptContext(
     schemes=["bcrypt"],
@@ -68,3 +68,9 @@ def decode_token(token: str):
     except JWTError:
 
         return None
+    
+
+#token de recuperacion de contraseña
+def generate_reset_token():
+
+    return secrets.token_urlsafe(64)

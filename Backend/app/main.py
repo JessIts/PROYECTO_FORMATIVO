@@ -9,12 +9,8 @@ from app.modules.usuario_rol.routes import router as usuario_rol_router
 from app.modules.usuarios.model import Usuario
 from app.modules.roles.model import Rol
 from app.modules.usuario_rol.model import UsuarioRol
-
-
-
-from app.modules.auth.routes import (
-    router as auth_router
-)
+from app.modules.auth.routes import router as auth_router
+from app.modules.auth.password_token_model import PasswordResetToken
 
 Base.metadata.create_all(
     bind=engine

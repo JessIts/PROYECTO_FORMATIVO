@@ -3,13 +3,16 @@ from fastapi import Depends
 
 from sqlalchemy.orm import Session
 
+from app.modules.auth.service import AuthService
 from app.modules.usuarios.schema import UsuarioResponse
 
 from app.database.connection import get_db
 
 from .controller import AuthController
 from .schema import (
+    ForgotPasswordRequest,
     LoginRequest,
+    ResetPasswordRequest,
     TokenResponse
 )
 
@@ -58,4 +61,50 @@ def admin_test(
     return {
         "mensaje": "Bienvenido administrador",
         "usuario": usuario.nombre
+    }
+
+
+@router.post(
+    "/forgot-password"
+)
+def forgot_password(
+    data: ForgotPasswordRequest,
+    db: Session = Depends(get_db)
+):
+
+    token = AuthService.forgot_password(
+        db,
+        data.email
+    )
+
+    if not token:
+        return {
+            "mensaje":
+            "Correo no encontrado"
+        }
+
+    return {
+        "mensaje":
+        "Token generado",
+        "token": token
+    }
+    
+    
+@router.post(
+    "/reset-password"
+)
+def reset_password(
+    data: ResetPasswordRequest,
+    db: Session = Depends(get_db)
+):
+
+    AuthService.reset_password(
+        db,
+        data.token,
+        data.nueva_password
+    )
+
+    return {
+        "mensaje":
+        "Contraseña actualizada"
     }
