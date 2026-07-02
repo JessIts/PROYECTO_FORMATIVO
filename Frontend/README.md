@@ -1,118 +1,246 @@
-FRONTEND – DESARROLLO DEL PROYECTO
+# FRONTEND (REACT)
 
-En mi parte del proyecto me correspondió el desarrollo del frontend, el cual es la interfaz visual del sistema donde el usuario interactúa directamente.
+Frontend del Sistema Integrado de Horarios (SIHS), desarrollado en React para la gestión de autenticación, registro de usuarios y recuperación de contraseña.
 
-Durante este proceso estuve trabajando en tres módulos principales:
+---
 
- Login de usuarios
- Registro de usuarios
- Recuperación de contraseña
+#  Tecnologías utilizadas
 
-Cada uno de estos módulos fue desarrollado cumpliendo con los requerimientos establecidos en el proyecto, incluyendo validaciones de formularios,
+-Framework: React JS
+-Build Tool: Vite
+-Navegación: React Router DOM
+-Lenguaje: JavaScript (ES6+)
+-Estilos: CSS3 (Implementación de CSS Modules para encapsulamiento)
+-Comunicación: Fetch API (Consumo de servicios REST FastAPI)
 
-¿CÓMO SE LEVANTA EL PROYECTO FRONTEND?
+---
 
-Para ejecutar el proyecto en mi computador se utilizaron los siguientes comandos:
+#  Estructura del proyecto
 
- 1. Crear el proyecto con React + Vite
-    
+```
+src/
+├── api/
+│   └── auth.api.js
+├── assets/
+│   ├── hero.png
+│   ├── react.svg
+│   └── vite.svg
+├── components/
+│   ├── InputField.jsx
+│   ├── Navbar.jsx
+│   └── ProtectedRoute.jsx
+├── context/
+│   └── AuthContext.jsx
+├── pages/
+│   ├── Dashboard/
+│   │   ├── Dashboard.jsx
+│   │   ├── Dashboard.module.css
+│   │   ├── ViewCoordinator.jsx
+│   │   ├── ViewInstructor.jsx
+│   │   └── ViewLearner.jsx
+│   ├── ForgotPassword.jsx
+│   ├── Login.jsx
+│   ├── RegisterForm.jsx
+│   ├── RegisterRole.jsx
+│   ├── ResetPassword.jsx
+│   └── SetPassword.jsx
+├── routes/
+│   └── AppRouter.jsx
+├── App.css
+├── App.jsx
+├── auth.css
+├── index.css
+└── main.jsx
+```
+
+---
+
+#  Instalación del proyecto (DESDE CERO)
+
+## 1️ Instalar Node.js
+Descargar e instalar Node.js:
+https://nodejs.org/
+
+Verificar instalación:
+
+```bash
+node -v
+npm -v
+```
+
+---
+
+## 2️ Crear proyecto React con Vite
+
+```bash
 npm create vite@latest frontend
+```
 
- 3. Entrar a la carpeta del proyecto
-    
+Seleccionar:
+- React
+- JavaScript
+
+---
+
+## 3️ Entrar al proyecto
+
+```bash
 cd frontend
+```
 
- 5. Instalar dependencias del proyecto
-    
+---
+
+## 4️ Instalar dependencias
+
+```bash
 npm install
+```
 
- 7. Instalar librerías necesarias
-    
-npm install react-router-dom lucide-react react-i18next i18next
+---
 
- 9. Ejecutar el proyecto en modo desarrollo
-     
+## 5️ Instalar React Router DOM
+
+```bash
+npm install react-router-dom
+```
+
+---
+
+## 6️ Ejecutar proyecto
+
+```bash
 npm run dev
+```
 
- 11. Acceder al proyecto en el navegador
-
-Después de ejecutar el comando, el sistema se abre en:
-
-http://localhost:5174
+---
 
 
-3. ¿Qué es React?
+#  Módulos del sistema
 
-React es una librería de JavaScript que permite construir interfaces de usuario modernas basadas en componentes reutilizables.
+##  Login
+- Autenticación de usuario
+- Generación de token
 
-Ejemplo de componentes en este proyecto:
+Endpoint:
+```
+POST /auth/login
+```
 
-LoginPage
+---
 
-RegisterPage
+##  Registro de usuarios
+- Registro por roles:
+  - Coordinador
+  - Instructor
+  - Aprendiz
 
-ForgotPasswordPage
+Endpoint:
+```
+POST /auth/register
+```
 
-InputField
+---
 
-Button
+##  Recuperación de contraseña
+Flujo:
+
+1. Enviar correo
+2. Validar código (modal)
+3. Nueva contraseña
+
+Endpoints:
+```
+POST /auth/forgot-password
+POST /auth/reset-password
+```
+
+---
+
+##  Set password
+Validación de contraseña segura:
+
+- Mayúscula
+- Minúscula
+- Número
+- Carácter especial
+- Mínimo 8 caracteres
+
+Endpoint:
+```
+POST /auth/set-password
+```
+
+---
+
+# Rutas del frontend
+
+```text
+/               → Login
+/register-role  → Selección de rol
+/register-form  → Registro
+/set-password   → Crear contraseña
+/forgot-password→ Recuperación
+/reset          → Reset password
+/dashboard      → Dashboard Principal (Vista dinámica según rol)
+```
+
+---
 
 
-CONEXIÓN CON EL BACKEND
+# Validaciones y Arquitectura
 
-El frontend se conecta con el backend mediante peticiones HTTP (API REST), donde se envían los datos ingresados por el usuario (correo, contraseña, etc.) y el backend responde con información como:
-
-Validación de usuario
-
-Mensajes de error
-
-Token de autenticación
-
-
-¿Cómo se comunican frontend y backend?
-
-El frontend se comunica con el backend mediante peticiones (requests), enviando datos y recibiendo respuestas.
-
-Ejemplo:
-
-El usuario escribe correo y contraseña
-El frontend envía esos datos al backend
-El backend valida la información
-El backend responde si el acceso es correcto o incorrecto
+- Campos obligatorios
+- Validación de contraseña segura
+- Confirmación de contraseña
+- Validación por rol
+- Control de formularios
+- Arquitectura modular (CSS Modules)
+- Iconografía estilizada (Lucide React)
+---
 
 
+#  Flujo del sistema
 
-TECNOLOGÍAS UTILIZADAS
+```
+Login 
+  ↓
+Registro 
+  ↓
+Set Password 
+  ↓
+Login 
+  ↓
+Dashboard (Vista dinámica según rol)
+```
 
- 
- 
-React (interfaz de usuario)
+---
 
-Vite (entorno de desarrollo)
+# ▶ Ejecución
 
-JavaScript / TypeScript
+```bash
+npm install
+npm run dev
+```
 
-React Router DOM (navegación entre páginas)
+---
 
-Lucide React (íconos)
+# 🌐 URL del proyecto
 
-i18next (multilenguaje)
+```
+http://localhost:5173
+```
 
+---
 
+#  Estado del proyecto
 
+✔ Login funcional  
+✔ Registro por roles  
+✔ Recuperación de contraseña con modal  
+✔ Set password seguro  
+✔ Rutas configuradas  
+✔ Consumo de API REST  
 
-FUNCIONALIDADES DEL FRONTEND
+---
 
- 
-Validación de formularios en login y registro
-
-Manejo de errores en pantalla
-
-Control de contraseñas seguras
-
-Recuperación de contraseña por pasos
-
-Navegación entre páginas
-
-Diseño responsivo (adaptable a celular y PC)
-
+# 
