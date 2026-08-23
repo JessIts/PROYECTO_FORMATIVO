@@ -1,25 +1,27 @@
-from fastapi import HTTPException
+# ============================================================
+# app/modules/auth/controller.py
+# ============================================================
 
-from .service import AuthService
+from sqlalchemy.orm import Session
+
+from app.modules.auth.service import AuthService
+from app.modules.auth.schema import LoginRequest
+
 
 class AuthController:
 
+    # ========================================================
+    # LOGIN
+    # ========================================================
+
     @staticmethod
     def login(
-        db,
-        data
+        db: Session,
+        data: LoginRequest
     ):
-        try:
 
-            return AuthService.login(
-                db,
-                data.email,
-                data.password
-            )
-
-        except Exception as e:
-
-            raise HTTPException(
-                status_code=401,
-                detail=str(e)
-            )
+        return AuthService.login(
+            db,
+            data.correoElectronico,
+            data.password
+        )

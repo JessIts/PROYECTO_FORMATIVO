@@ -1,89 +1,90 @@
+from uuid import UUID
+
+from sqlalchemy.orm import Session
+
 from app.modules.usuario_rol.model import UsuarioRol
 from app.modules.usuario_rol.repository import UsuarioRolRepository
-
-from app.modules.usuarios.repository import UsuarioRepository
-from app.modules.roles.repository import RolRepository
+from app.modules.usuario_rol.schema import UsuarioRolCreate
 
 
 class UsuarioRolService:
 
+    # ============================================================
+    # ASIGNAR ROL
+    # ============================================================
+
     @staticmethod
-    def asignar(
-        db,
-        id_usuario,
-        id_rol
+    def asignar_rol(
+        db: Session,
+        data: UsuarioRolCreate
     ):
 
-        usuario = UsuarioRepository.obtener_por_id(
-            db,
-            id_usuario
+        relacion_existente = (
+            UsuarioRolRepository.obtener_relacion(
+                db,
+                data.idUsuario,
+                data.idRol
+            )
         )
 
-        if not usuario:
-            return "USUARIO_NO_EXISTE"
+        if relacion_existente:
+            raise ValueError(
+                "El usuario ya tiene asignado este rol"
+            )
 
-        rol = RolRepository.obtener_por_id(
-            db,
-            id_rol
-        )
-
-        if not rol:
-            return "ROL_NO_EXISTE"
-
-        relacion = UsuarioRolRepository.obtener(
-            db,
-            id_usuario,
-            id_rol
-        )
-
-        if relacion:
-            return "YA_EXISTE"
-
-        nueva_relacion = UsuarioRol(
-            idUsuario=id_usuario,
-            idRol=id_rol
+        usuario_rol = UsuarioRol(
+            idUsuario=data.idUsuario,
+            idRol=data.idRol
         )
 
         return UsuarioRolRepository.crear(
             db,
-            nueva_relacion
-        )
-        
-    @staticmethod
-    def remover(
-        db,
-        id_usuario,
-        id_rol
-    ):
-
-        relacion = UsuarioRolRepository.obtener(
-            db,
-            id_usuario,
-            id_rol
+            usuario_rol
         )
 
-        if not relacion:
-            return False
-
-        UsuarioRolRepository.eliminar(
-            db,
-            relacion
-        )
-
-        return True
+    # ============================================================
+    # OBTENER ROLES DEL USUARIO
+    # ============================================================
 
     @staticmethod
     def obtener_roles_usuario(
-        db,
-        id_usuario
+        db: Session,
+        id_usuario: UUID
     ):
 
-        usuario = UsuarioRepository.obtener_por_id(
+        return UsuarioRolRepository.obtener_roles_usuario(
             db,
             id_usuario
         )
 
-        if not usuario:
-            return None
+    # ============================================================
+    # OBTENER USUARIOS DEL ROL
+    # ============================================================
 
-        return usuario.roles
+    @staticmethod
+    def obtener_usuarios_rol(
+        db: Session,
+        id_rol: UUID
+    ):
+
+        return UsuarioRolRepository.obtener_usuarios_rol(
+            db,
+            id_rol
+        )
+
+    # ============================================================
+    # ELIMINAR ROL
+    # ============================================================
+
+    @staticmethod
+    def eliminar_rol(
+        db: Session,
+        id_usuario: UUID,
+        id_rol: UUID
+    ):
+
+        return UsuarioRolRepository.eliminar(
+            db,
+            id_usuario,
+            id_rol
+        )

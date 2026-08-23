@@ -1,20 +1,31 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+from uuid import UUID
 
 
-class RolBase(BaseModel):
+class RolCreate(BaseModel):
+    """
+    Datos necesarios para crear un rol.
+
+    El idRol NO se recibe porque se genera automáticamente.
+    """
+
     nombre: str
 
 
-class RolCreate(RolBase):
-    pass
+class RolUpdate(BaseModel):
+    """
+    Datos permitidos para actualizar un rol.
+    """
 
+    nombre: str | None = None
+    
+class RolResponse(BaseModel):
+    """
+    Información pública de un rol.
+    """
 
-class RolUpdate(RolBase):
-    pass
+    idRol: UUID
+    nombre: str
 
-
-class RolResponse(RolBase):
-    idRol: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

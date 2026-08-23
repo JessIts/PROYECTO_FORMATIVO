@@ -1,26 +1,25 @@
-from sqlalchemy import Column
-from sqlalchemy import Integer
-from sqlalchemy import String
+import uuid
 
+from sqlalchemy import Column, String
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.database.base import Base
 
 
 class Rol(Base):
-
     __tablename__ = "roles"
 
     idRol = Column(
-        Integer,
+        UUID(as_uuid=True),
         primary_key=True,
-        index=True
+        default=uuid.uuid4
     )
 
     nombre = Column(
         String(50),
-        unique=True,
-        nullable=False
+        nullable=False,
+        unique=True
     )
 
     usuarios = relationship(

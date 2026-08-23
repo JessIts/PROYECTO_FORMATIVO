@@ -1,83 +1,67 @@
-from fastapi import HTTPException
+from uuid import UUID
 
-from app.modules.usuario_rol.service import (
-    UsuarioRolService
-)
+from sqlalchemy.orm import Session
+
+from app.modules.usuario_rol.service import UsuarioRolService
+from app.modules.usuario_rol.schema import UsuarioRolCreate
 
 
 class UsuarioRolController:
 
-    @staticmethod
-    def asignar(
-        db,
-        data
-    ):
+    # ============================================================
+    # ASIGNAR ROL A USUARIO
+    # ============================================================
 
-        resultado = UsuarioRolService.asignar(
+    @staticmethod
+    def asignar_rol(
+        db: Session,
+        data: UsuarioRolCreate
+    ):
+        return UsuarioRolService.asignar_rol(
             db,
-            data.idUsuario,
-            data.idRol
+            data
         )
 
-        if resultado == "USUARIO_NO_EXISTE":
-            raise HTTPException(
-                status_code=404,
-                detail="Usuario no encontrado"
-            )
+    # ============================================================
+    # OBTENER ROLES DE UN USUARIO
+    # ============================================================
 
-        if resultado == "ROL_NO_EXISTE":
-            raise HTTPException(
-                status_code=404,
-                detail="Rol no encontrado"
-            )
-
-        if resultado == "YA_EXISTE":
-            raise HTTPException(
-                status_code=400,
-                detail="El usuario ya tiene ese rol"
-            )
-
-        return {
-            "mensaje": "Rol asignado correctamente"
-        }
-        
-    @staticmethod
-    def remover(
-        db,
-         data
-    ):
-
-        eliminado = UsuarioRolService.remover(
-            db,
-            data.idUsuario,
-            data.idRol
-        )
-
-        if not eliminado:
-            raise HTTPException(
-                status_code=404,
-                detail="Relación no encontrada"
-            )
-
-        return {
-            "mensaje": "Rol removido correctamente"
-        }
-    
     @staticmethod
     def obtener_roles_usuario(
-        db,
-        id_usuario
+        db: Session,
+        id_usuario: UUID
     ):
-
-        roles = UsuarioRolService.obtener_roles_usuario(
+        return UsuarioRolService.obtener_roles_usuario(
             db,
             id_usuario
         )
 
-        if roles is None:
-            raise HTTPException(
-                status_code=404,
-                detail="Usuario no encontrado"
-            )
+    # ============================================================
+    # OBTENER USUARIOS DE UN ROL
+    # ============================================================
 
-        return roles
+    @staticmethod
+    def obtener_usuarios_rol(
+        db: Session,
+        id_rol: UUID
+    ):
+        return UsuarioRolService.obtener_usuarios_rol(
+            db,
+            id_rol
+        )
+
+    # ============================================================
+    # ELIMINAR ROL DE USUARIO
+    # ============================================================
+
+    @staticmethod
+    def eliminar_rol(
+        db: Session,
+        id_usuario: UUID,
+        id_rol: UUID
+    ):
+        return UsuarioRolService.eliminar_rol(
+            db,
+            id_usuario,
+            id_rol
+        )

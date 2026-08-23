@@ -1,30 +1,34 @@
-from fastapi import APIRouter
-from fastapi import Depends
+from uuid import UUID
 
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
-
 from app.core.dependencies import require_admin
 
 from app.modules.usuario_rol.schema import (
-    UsuarioRolCreate
+    UsuarioRolCreate,
+    UsuarioRolResponse
 )
 
 from app.modules.usuario_rol.controller import (
     UsuarioRolController
 )
 
-from app.modules.usuario_rol.schema import (
-    UsuarioRolResponse
-)
 
 router = APIRouter(
     prefix="/usuario-rol",
     tags=["Usuario Rol"]
 )
 
-@router.post("/asignar")
+
+# ============================================================
+# ASIGNAR ROL A USUARIO
+# ============================================================
+
+@router.post(
+    "/asignar"
+)
 def asignar_rol(
     data: UsuarioRolCreate,
     db: Session = Depends(get_db),
@@ -34,8 +38,15 @@ def asignar_rol(
         db,
         data
     )
-    
-@router.delete("/remover")
+
+
+# ============================================================
+# REMOVER ROL DE USUARIO
+# ============================================================
+
+@router.delete(
+    "/remover"
+)
 def remover_rol(
     data: UsuarioRolCreate,
     db: Session = Depends(get_db),
@@ -46,12 +57,17 @@ def remover_rol(
         data
     )
 
+
+# ============================================================
+# OBTENER ROLES DE UN USUARIO
+# ============================================================
+
 @router.get(
     "/usuario/{id_usuario}",
     response_model=list[UsuarioRolResponse]
 )
 def obtener_roles_usuario(
-    id_usuario: int,
+    id_usuario: UUID,
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
 ):

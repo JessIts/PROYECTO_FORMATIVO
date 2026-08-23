@@ -1,13 +1,25 @@
-from pydantic import BaseModel
+from uuid import UUID
 
+from pydantic import BaseModel, ConfigDict
+
+
+# ============================================================
+# ASIGNAR ROL A USUARIO
+# ============================================================
 
 class UsuarioRolCreate(BaseModel):
-    idUsuario: int
-    idRol: int
-    
-class UsuarioRolResponse(BaseModel):
-    idRol: int
-    nombre: str
+    idUsuario: UUID
+    idRol: UUID
 
-    class Config:
-        from_attributes = True
+
+# ============================================================
+# RESPUESTA
+# ============================================================
+
+class UsuarioRolResponse(BaseModel):
+    idUsuario: UUID
+    idRol: UUID
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )

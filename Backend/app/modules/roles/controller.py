@@ -1,78 +1,91 @@
-from fastapi import HTTPException
+# ============================================================
+# app/modules/roles/controller.py
+# ============================================================
+
+from uuid import UUID
+
+from sqlalchemy.orm import Session
 
 from app.modules.roles.service import RolService
+from app.modules.roles.schema import (
+    RolCreate,
+    RolUpdate
+)
 
 
 class RolController:
 
+    # ========================================================
+    # OBTENER TODOS LOS ROLES
+    # ========================================================
+
     @staticmethod
-    def obtener_todos(db):
-        return RolService.obtener_todos(db)
+    def obtener_todos(
+        db: Session
+    ):
+
+        return RolService.obtener_todos(
+            db
+        )
+
+    # ========================================================
+    # OBTENER ROL POR UUID
+    # ========================================================
 
     @staticmethod
     def obtener_por_id(
-        db,
-        id_rol
+        db: Session,
+        idRol: UUID
     ):
-        rol = RolService.obtener_por_id(
+
+        return RolService.obtener_por_id(
             db,
-            id_rol
+            idRol
         )
 
-        if not rol:
-            raise HTTPException(
-                status_code=404,
-                detail="Rol no encontrado"
-            )
-
-        return rol
+    # ========================================================
+    # CREAR ROL
+    # ========================================================
 
     @staticmethod
     def crear(
-        db,
-        data
+        db: Session,
+        data: RolCreate
     ):
+
         return RolService.crear(
             db,
             data
         )
 
+    # ========================================================
+    # ACTUALIZAR ROL
+    # ========================================================
+
     @staticmethod
     def actualizar(
-        db,
-        id_rol,
-        data
+        db: Session,
+        idRol: UUID,
+        data: RolUpdate
     ):
-        rol = RolService.actualizar(
+
+        return RolService.actualizar(
             db,
-            id_rol,
+            idRol,
             data
         )
 
-        if not rol:
-            raise HTTPException(
-                status_code=404,
-                detail="Rol no encontrado"
-            )
-
-        return rol
+    # ========================================================
+    # ELIMINAR ROL
+    # ========================================================
 
     @staticmethod
     def eliminar(
-        db,
-        id_rol
+        db: Session,
+        idRol: UUID
     ):
-        eliminado = RolService.eliminar(
+
+        return RolService.eliminar(
             db,
-            id_rol
+            idRol
         )
-
-        if not eliminado:
-            raise HTTPException(
-                status_code=404,
-                detail="Rol no encontrado"
-            )
-
-        return {
-            "mensaje": "Rol eliminado"
-        }

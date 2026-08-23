@@ -1,27 +1,30 @@
-from fastapi import APIRouter
-from fastapi import Depends
+from uuid import UUID
 
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database.connection import get_db
 
 from app.modules.roles.controller import RolController
+
 from app.modules.roles.schema import (
     RolCreate,
     RolUpdate,
     RolResponse
 )
 
-from app.core.dependencies import (
-    require_admin
-)
+from app.core.dependencies import require_admin
+
 
 router = APIRouter(
     prefix="/roles",
     tags=["Roles"]
 )
 
-#crea los roles
+
+# ============================================================
+# CREAR ROL
+# ============================================================
 
 @router.post(
     "/",
@@ -37,7 +40,11 @@ def crear_rol(
         data
     )
 
-#obtiene todos los roles
+
+# ============================================================
+# OBTENER TODOS LOS ROLES
+# ============================================================
+
 @router.get(
     "/",
     response_model=list[RolResponse]
@@ -46,16 +53,21 @@ def obtener_roles(
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
 ):
-    return RolController.obtener_todos(db)
+    return RolController.obtener_todos(
+        db
+    )
 
-#obtiene roles por id
+
+# ============================================================
+# OBTENER ROL POR UUID
+# ============================================================
 
 @router.get(
     "/{id_rol}",
     response_model=RolResponse
 )
 def obtener_rol(
-    id_rol: int,
+    id_rol: UUID,
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
 ):
@@ -63,15 +75,18 @@ def obtener_rol(
         db,
         id_rol
     )
-    
-#actualiza los roles
+
+
+# ============================================================
+# ACTUALIZAR ROL
+# ============================================================
 
 @router.put(
     "/{id_rol}",
     response_model=RolResponse
 )
 def actualizar_rol(
-    id_rol: int,
+    id_rol: UUID,
     data: RolUpdate,
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
@@ -81,13 +96,17 @@ def actualizar_rol(
         id_rol,
         data
     )
-    
-#elimina los roles
+
+
+# ============================================================
+# ELIMINAR ROL
+# ============================================================
+
 @router.delete(
     "/{id_rol}"
 )
 def eliminar_rol(
-    id_rol: int,
+    id_rol: UUID,
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
 ):

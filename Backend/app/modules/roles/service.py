@@ -1,3 +1,7 @@
+from uuid import UUID
+
+from sqlalchemy.orm import Session
+
 from app.modules.roles.model import Rol
 from app.modules.roles.repository import RolRepository
 
@@ -5,13 +9,15 @@ from app.modules.roles.repository import RolRepository
 class RolService:
 
     @staticmethod
-    def obtener_todos(db):
+    def obtener_todos(
+        db: Session
+    ):
         return RolRepository.obtener_todos(db)
 
     @staticmethod
     def obtener_por_id(
-        db,
-        id_rol
+        db: Session,
+        id_rol: UUID
     ):
         return RolRepository.obtener_por_id(
             db,
@@ -20,7 +26,7 @@ class RolService:
 
     @staticmethod
     def crear(
-        db,
+        db: Session,
         data
     ):
         nuevo_rol = Rol(
@@ -34,8 +40,8 @@ class RolService:
 
     @staticmethod
     def actualizar(
-        db,
-        id_rol,
+        db: Session,
+        id_rol: UUID,
         data
     ):
         rol = RolRepository.obtener_por_id(
@@ -55,9 +61,10 @@ class RolService:
 
     @staticmethod
     def eliminar(
-        db,
-        id_rol
-    ):
+        db: Session,
+        id_rol: UUID
+    ) -> bool:
+
         rol = RolRepository.obtener_por_id(
             db,
             id_rol

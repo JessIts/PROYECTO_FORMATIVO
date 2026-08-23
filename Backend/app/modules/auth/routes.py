@@ -1,34 +1,75 @@
-from fastapi import APIRouter
-from fastapi import Depends
+# ============================================================
+# app/modules/auth/routes.py
+# ============================================================
+
+from fastapi import (
+    APIRouter,
+    Depends
+)
 
 from sqlalchemy.orm import Session
 
-from app.modules.auth.service import AuthService
-from app.modules.usuarios.schema import UsuarioResponse
+
+# ============================================================
+# DATABASE
+# ============================================================
 
 from app.database.connection import get_db
 
-from .controller import AuthController
-from .schema import (
+
+# ============================================================
+# DEPENDENCIAS
+# ============================================================
+
+from app.core.dependencies import (
+    get_current_user,
+    require_admin
+)
+
+
+# ============================================================
+# CONTROLLER
+# ============================================================
+
+from app.modules.auth.controller import (
+    AuthController
+)
+
+
+# ============================================================
+# SCHEMAS
+# ============================================================
+
+from app.modules.auth.schema import (
     ForgotPasswordRequest,
     LoginRequest,
     ResetPasswordRequest,
     TokenResponse
 )
 
-from app.core.dependencies import (
-    get_current_user
+
+# ============================================================
+# USUARIO
+# ============================================================
+
+from app.modules.usuarios.schema import (
+    UsuarioResponse
 )
 
-from app.core.dependencies import (require_admin)
-from app.core.dependencies import require_roles
 
+# ============================================================
+# ROUTER
+# ============================================================
 
 router = APIRouter(
     prefix="/auth",
     tags=["Auth"]
 )
 
+
+# ============================================================
+# LOGIN
+# ============================================================
 
 @router.post(
     "/login",
@@ -44,6 +85,11 @@ def login(
         data
     )
 
+
+# ============================================================
+# USUARIO ACTUAL
+# ============================================================
+
 @router.get(
     "/me",
     response_model=UsuarioResponse
@@ -51,18 +97,30 @@ def login(
 def me(
     usuario=Depends(get_current_user)
 ):
+
     return usuario
 
-@router.get("/admin-test")
+
+# ============================================================
+# PRUEBA DE ADMINISTRADOR
+# ============================================================
+
+@router.get(
+    "/admin-test"
+)
 def admin_test(
     usuario=Depends(require_admin)
 ):
 
     return {
         "mensaje": "Bienvenido administrador",
-        "usuario": usuario.nombre
+        "usuario": usuario.nombres
     }
 
+
+# ============================================================
+# SOLICITAR RECUPERACIÓN DE CONTRASEÑA
+# ============================================================
 
 @router.post(
     "/forgot-password"
@@ -72,24 +130,16 @@ def forgot_password(
     db: Session = Depends(get_db)
 ):
 
-    token = AuthService.forgot_password(
+    return AuthController.forgot_password(
         db,
-        data.email
+        data
     )
 
-    if not token:
-        return {
-            "mensaje":
-            "Correo no encontrado"
-        }
 
-    return {
-        "mensaje":
-        "Token generado",
-        "token": token
-    }
-    
-    
+# ============================================================
+# RESTABLECER CONTRASEÑA
+# ============================================================
+
 @router.post(
     "/reset-password"
 )
@@ -98,13 +148,7 @@ def reset_password(
     db: Session = Depends(get_db)
 ):
 
-    AuthService.reset_password(
+    return AuthController.reset_password(
         db,
-        data.token,
-        data.nueva_password
+        data
     )
-
-    return {
-        "mensaje":
-        "Contraseña actualizada"
-    }
