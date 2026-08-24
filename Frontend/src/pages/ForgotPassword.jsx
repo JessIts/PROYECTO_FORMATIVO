@@ -1,119 +1,130 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import "./../auth.css";
-import { forgotPasswordRequest, resetPasswordRequest } from "../api/auth.api";
+
+import { forgotPasswordRequest } from "../api/auth.api";
 
 export default function ForgotPassword() {
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
 
-  const [showCodeModal, setShowCodeModal] = useState(false);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
+    const navigate = useNavigate();
 
-  // enviar correo
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
-    const res = await forgotPasswordRequest({ email });
+    const handleSubmit = async (e) => {
 
-    if (res.success || res.message) {
-      setShowCodeModal(true);
-    } else {
-      alert("Error enviando código");
-    }
-  };
+        e.preventDefault();
 
-  // validar código 
-  const handleVerifyCode = () => {
-    setShowCodeModal(false);
-    setShowPasswordModal(true);
-  };
+        if (!email.trim()) {
+            setMessage("Ingresa tu correo electrónico.");
+            return;
+        }
 
-  // cambiar password
-  const handleResetPassword = async () => {
-    const res = await resetPasswordRequest({
-      email,
-      code,
-      password: newPassword,
-    });
+        try {
 
-    if (res.success || res.message) {
-      alert("Contraseña actualizada");
-      window.location.href = "/";
-    } else {
-      alert("Error");
-    }
-  };
+            setLoading(true);
+            setMessage("");
 
-  return (
-    <div className="fp-container">
+            const res = await forgotPasswordRequest({
+                correoElectronico: email
+            });
 
-      {/* CARD PRINCIPAL */}
-      <div className="fp-card">
+            if (res.success || res.message) {
 
-        <div className="fp-icon">✉️</div>
+                setMessage(
+                    "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña."
+                );
 
-        <h2>Recuperar Contraseña</h2>
+                setEmail("");
 
-        <p>Ingresa tu correo y te enviaremos instrucciones</p>
+            } else {
 
-        <form onSubmit={handleSubmit}>
-          <label>Correo electrónico</label>
-          <input
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="tucorreo@gmail.com"
-          />
+                setMessage(
+                    res.message ||
+                    "No fue posible procesar la solicitud."
+                );
+            }
 
-          <button type="submit">
-            Enviar instrucciones
-          </button>
-        </form>
+        } catch (error) {
 
-        <a href="/" className="fp-back">
-          ← Volver al inicio de sesión
-        </a>
+            console.error(error);
 
-      </div>
+            setMessage(
+                "No fue posible conectar con el servidor."
+            );
 
-      {/*  MODAL 1 - CÓDIGO */}
-      {showCodeModal && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <h3>Ingresa el código</h3>
+        } finally {
 
-            <input
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="Código"
-            />
+            setLoading(false);
 
-            <button onClick={handleVerifyCode}>
-              Verificar
-            </button>
-          </div>
+        }
+    };
+
+    return (
+        <div className="fp-container">
+
+            <div className="fp-card">
+
+                <div className="fp-icon">
+                    ✉️
+                </div>
+
+                <h2>
+                    Recuperar Contraseña
+                </h2>
+
+                <p>
+                    Ingresa tu correo electrónico y
+                    te enviaremos un enlace para
+                    restablecer tu contraseña.
+                </p>
+
+                <form onSubmit={handleSubmit}>
+
+                    <label>
+                        Correo electrónico
+                    </label>
+
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) =>
+                            setEmail(e.target.value)
+                        }
+                        placeholder="tucorreo@gmail.com"
+                        required
+                    />
+
+                    <button
+                        type="submit"
+                        disabled={loading}
+                    >
+                        {loading
+                            ? "Enviando..."
+                            : "Enviar instrucciones"
+                        }
+                    </button>
+
+                </form>
+
+                {message && (
+                    <p>
+                        {message}
+                    </p>
+                )}
+
+                <button
+                    type="button"
+                    className="fp-back"
+                    onClick={() => navigate("/")}
+                >
+                    ← Volver al inicio de sesión
+                </button>
+
+            </div>
+
         </div>
-      )}
-
-      {/* MODAL 2 - PASSWORD */}
-      {showPasswordModal && (
-        <div className="modal-overlay">
-          <div className="modal-card">
-            <h3>Nueva contraseña</h3>
-
-            <input
-              type="password"
-              placeholder="Nueva contraseña"
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-
-            <button onClick={handleResetPassword}>
-              Guardar
-            </button>
-          </div>
-        </div>
-      )}
-
-    </div>
-  );
+    );
 }

@@ -5,6 +5,10 @@ from fastapi import (
 
 from sqlalchemy.orm import Session
 
+from app.modules.usuarios.schema import (
+    UsuarioResponse,
+    UsuarioConRolesResponse
+)
 
 # ============================================================
 # DATABASE
@@ -49,7 +53,8 @@ from app.modules.auth.schema import (
 # ============================================================
 
 from app.modules.usuarios.schema import (
-    UsuarioResponse
+    UsuarioResponse,
+    UsuarioConRolesResponse
 )
 
 
@@ -81,18 +86,21 @@ def login(
         data
     )
 
+
 # ============================================================
 # USUARIO AUTENTICADO
 # ============================================================
 
 @router.get(
     "/me",
-    response_model=UsuarioResponse
+    response_model=UsuarioConRolesResponse
 )
 def obtener_usuario_actual(
     usuario=Depends(get_current_user)
 ):
+
     return usuario
+
 
 # ============================================================
 # SOLICITAR RECUPERACIÓN DE CONTRASEÑA
@@ -129,4 +137,3 @@ def reset_password(
         data.token,
         data.nuevaPassword
     )
-    

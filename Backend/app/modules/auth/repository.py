@@ -20,13 +20,13 @@ class AuthRepository:
     @staticmethod
     def obtener_token(
         db: Session,
-        token: str
+        token_hash: str
     ) -> PasswordResetToken | None:
 
         return (
             db.query(PasswordResetToken)
             .filter(
-                PasswordResetToken.token == token
+                PasswordResetToken.tokenHash == token_hash
             )
             .first()
         )

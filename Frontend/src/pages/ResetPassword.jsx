@@ -1,90 +1,158 @@
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+
 import "./../auth.css";
+
 import { resetPasswordRequest } from "../api/auth.api";
 
 export default function ResetPassword() {
-  const [form, setForm] = useState({
-    email: "",
-    code: "",
-    new_password: "",
-    confirm_password: "",
-  });
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
+    const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+    const [searchParams] = useSearchParams();
 
-    if (form.new_password !== form.confirm_password) {
-      alert("Las contraseñas no coinciden");
-      return;
-    }
+    const token = searchParams.get("token");
 
-    try {
-      const res = await resetPasswordRequest({
-        email: form.email,
-        token: form.code, 
-        new_password: form.new_password,
-      });
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-      if (res.success || res.message) {
-        alert("Contraseña actualizada");
-        window.location.href = "/";
-      } else {
-        alert(res.message || "Error al actualizar contraseña");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Error de conexión con el servidor");
-    }
-  };
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
 
-  return (
-    <div className="container">
-      <div className="card">
+    const handleSubmit = async (e) => {
 
-        <h2>Nueva contraseña</h2>
+        e.preventDefault();
 
-        <form onSubmit={handleSubmit}>
+        setMessage("");
 
-          <input
-            name="email"
-            placeholder="Correo"
-            onChange={handleChange}
-          />
+        if (!token) {
 
-          <input
-            name="code"
-            placeholder="Código"
-            onChange={handleChange}
-          />
+            setMessage(
+                "El enlace de recuperación no es válido."
+            );
 
-          <input
-            name="new_password"
-            type="password"
-            placeholder="Nueva contraseña"
-            onChange={handleChange}
-          />
+            return;
+        }
 
-          <input
-            name="confirm_password"
-            type="password"
-            placeholder="Confirmar contraseña"
-            onChange={handleChange}
-          />
+        if (newPassword !== confirmPassword) {
 
-          <button type="submit">
-            Actualizar
-          </button>
+            setMessage(
+                "Las contraseñas no coinciden."
+            );
 
-        </form>
+            return;
+        }
 
-      </div>
-    </div>
-  );
+        if (newPassword.length < 8) {
+
+            setMessage(
+                "La contraseña debe tener al menos 8 caracteres."
+            );
+
+            return;
+        }
+
+        try {
+
+            setLoading(true);
+
+            const res = await resetPasswordRequest({
+                token: token,
+                nuevaPassword: newPassword
+            });
+
+            if (res.success || res.message) {
+
+                alert(
+                    "Contraseña actualizada correctamente."
+                );
+
+                navigate("/");
+
+            } else {
+
+                setMessage(
+                    res.message ||
+                    "No fue posible actualizar la contraseña."
+                );
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            setMessage(
+                "El enlace no es válido o ha expirado."
+            );
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    };
+
+    return (
+        <div className="container">
+
+            <div className="card">
+
+                <h2>
+                    Nueva contraseña
+                </h2>
+
+                {!token ? (
+
+                    <p>
+                        El enlace de recuperación no es válido.
+                    </p>
+
+                ) : (
+
+                    <form onSubmit={handleSubmit}>
+
+                        <input
+                            type="password"
+                            placeholder="Nueva contraseña"
+                            value={newPassword}
+                            onChange={(e) =>
+                                setNewPassword(e.target.value)
+                            }
+                            required
+                        />
+
+                        <input
+                            type="password"
+                            placeholder="Confirmar contraseña"
+                            value={confirmPassword}
+                            onChange={(e) =>
+                                setConfirmPassword(e.target.value)
+                            }
+                            required
+                        />
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                        >
+                            {loading
+                                ? "Actualizando..."
+                                : "Actualizar contraseña"
+                            }
+                        </button>
+
+                    </form>
+
+                )}
+
+                {message && (
+                    <p>
+                        {message}
+                    </p>
+                )}
+
+            </div>
+
+        </div>
+    );
 }

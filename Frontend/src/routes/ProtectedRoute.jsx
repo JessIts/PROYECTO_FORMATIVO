@@ -1,60 +1,47 @@
-import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-
-import { getCurrentUserRequest } from "../api/auth.api";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute({ children }) {
 
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
+    const {
+        isAuthenticated,
+        loading,
+        user
+    } = useAuth();
 
-  useEffect(() => {
+    // Mientras verificamos la autenticación
+    if (loading) {
+        return <div>Cargando...</div>;
+    }
 
-    const validateSession = async () => {
+    // Usuario no autenticado
+    if (!isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
 
-      const token = localStorage.getItem("token");
+    // Roles del usuario
+    const roles = user?.roles || [];
 
-      if (!token) {
-        setAuthenticated(false);
-        setLoading(false);
-        return;
-      }
+    // Roles permitidos
+    const rolesValidos = [
+        "COORDINADOR",
+        "INSTRUCTOR",
+        "APRENDIZ"
+    ];
 
-      try {
+    // Verificar si tiene al menos un rol válido
+    const tieneRolValido = roles.some(
+        (rol) =>
+            rolesValidos.includes(
+                rol?.nombre?.toUpperCase()
+            )
+    );
 
-        await getCurrentUserRequest();
+    // Usuario autenticado pero sin permisos
+    if (!tieneRolValido) {
+        return <Navigate to="/acceso-denegado" replace />;
+    }
 
-        setAuthenticated(true);
-
-      } catch (error) {
-
-        console.error(
-          "Sesión inválida:",
-          error
-        );
-
-        localStorage.removeItem("token");
-
-        setAuthenticated(false);
-
-      } finally {
-
-        setLoading(false);
-
-      }
-    };
-
-    validateSession();
-
-  }, []);
-
-  if (loading) {
-    return <div>Verificando sesión...</div>;
-  }
-
-  if (!authenticated) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
+    // Usuario autorizado
+    return children;
 }

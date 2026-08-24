@@ -22,10 +22,12 @@ class PasswordResetToken(Base):
         index=True
     )
 
-    token = Column(
-        String(255),
+    # SHA-256 del token enviado al usuario
+    tokenHash = Column(
+        String(64),
         unique=True,
-        nullable=False
+        nullable=False,
+        index=True
     )
 
     idUsuario = Column(

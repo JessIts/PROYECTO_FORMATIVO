@@ -1,0 +1,23 @@
+# Variables de entorno
+.env
+*.env
+
+# Entorno virtual de Python
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Node
+node_modules/
+
+# Vite
+Frontend/.vite/
+Frontend/dist/
+
+# IDE
+.vscode/
+.idea/

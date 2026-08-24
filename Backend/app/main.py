@@ -1,7 +1,7 @@
 # ============================================================
 # app/main.py
 # ============================================================
-
+from app.core.email import probar_brevo
 from fastapi import FastAPI
 
 

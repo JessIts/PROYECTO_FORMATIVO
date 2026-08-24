@@ -2,6 +2,8 @@
 # app/modules/auth/service.py
 # ============================================================
 
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.modules.usuarios.repository import UsuarioRepository
@@ -38,23 +40,28 @@ class AuthService:
             correoElectronico
         )
 
+
         # ----------------------------------------------------
         # Usuario inexistente
         # ----------------------------------------------------
 
         if not usuario:
+
             raise ValueError(
                 "Credenciales incorrectas"
             )
+
 
         # ----------------------------------------------------
         # Usuario inactivo
         # ----------------------------------------------------
 
         if not usuario.estado:
+
             raise ValueError(
                 "El usuario se encuentra inactivo"
             )
+
 
         # ----------------------------------------------------
         # Verificar contraseña
@@ -64,9 +71,11 @@ class AuthService:
             password,
             usuario.password
         ):
+
             raise ValueError(
                 "Credenciales incorrectas"
             )
+
 
         # ----------------------------------------------------
         # Crear JWT
@@ -74,10 +83,10 @@ class AuthService:
 
         token = create_access_token(
             data={
-                # UUID convertido a string para el JWT
                 "sub": str(usuario.idUsuario)
             }
         )
+
 
         # ----------------------------------------------------
         # Respuesta
@@ -87,3 +96,47 @@ class AuthService:
             "access_token": token,
             "token_type": "bearer"
         }
+
+
+    # ========================================================
+    # OBTENER USUARIO AUTENTICADO
+    # ========================================================
+
+    @staticmethod
+    def obtener_usuario_actual(
+        db: Session,
+        id_usuario: UUID
+    ):
+        """
+        Obtiene el usuario autenticado junto con sus roles.
+        """
+
+        usuario = UsuarioRepository.obtener_por_id(
+            db,
+            id_usuario
+        )
+
+
+        # ----------------------------------------------------
+        # Usuario no encontrado
+        # ----------------------------------------------------
+
+        if not usuario:
+
+            raise ValueError(
+                "Usuario no encontrado"
+            )
+
+
+        # ----------------------------------------------------
+        # Usuario inactivo
+        # ----------------------------------------------------
+
+        if not usuario.estado:
+
+            raise ValueError(
+                "El usuario se encuentra inactivo"
+            )
+
+
+        return usuario

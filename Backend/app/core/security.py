@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 # ------------------------------------------------------------
 
 import secrets
-
+import hashlib
 # ------------------------------------------------------------
 # python-jose:
 # jwt      -> Permite crear y decodificar tokens JWT.
@@ -272,3 +272,14 @@ def generate_reset_token() -> str:
     """
 
     return secrets.token_urlsafe(64)
+
+
+def hash_reset_token(token: str) -> str:
+    """
+    Genera un SHA-256 del token de recuperación.
+
+    El token original nunca se almacena en la base de datos.
+    """
+    return hashlib.sha256(
+        token.encode("utf-8")
+    ).hexdigest()

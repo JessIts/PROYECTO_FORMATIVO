@@ -1,97 +1,136 @@
 import { useState } from "react";
+
 import "./../auth.css";
 
-import { loginRequest } from "../api/auth.api";
+import { useAuth } from "../context/AuthContext";
 
-import { useNavigate, Link } from "react-router-dom";
+import {
+  useNavigate,
+  Link
+} from "react-router-dom";
+
 
 export default function Login() {
 
   const navigate = useNavigate();
+
+  const { login } = useAuth();
+
 
   const [form, setForm] = useState({
     correoElectronico: "",
     password: "",
   });
 
+
   const [error, setError] = useState("");
+
   const [loading, setLoading] = useState(false);
 
+
+  // ============================================================
+  // CAMBIAR INPUT
+  // ============================================================
+
   const handleChange = (e) => {
+
     setForm({
       ...form,
       [e.target.name]: e.target.value,
     });
+
   };
+
+
+  // ============================================================
+  // LOGIN
+  // ============================================================
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    setError("");
+  e.preventDefault();
 
-    if (!form.correoElectronico || !form.password) {
-      setError("Debes ingresar tu correo electrónico y contraseña.");
-      return;
-    }
+  setError("");
 
-    try {
+  if (!form.correoElectronico || !form.password) {
 
-      setLoading(true);
+    setError(
+      "Debes ingresar tu correo electrónico y contraseña."
+    );
 
-      const res = await loginRequest(form);
+    return;
+  }
 
-      if (res?.access_token) {
 
-        localStorage.setItem("token", res.access_token);
+  try {
 
-        setForm({
-          correoElectronico: "",
-          password: "",
-        });
+    setLoading(true);
 
-        navigate("/dashboard");
 
-      } else {
+    await login(form);
 
-        setError("No se recibió el token de autenticación.");
 
-      }
+    setForm({
+      correoElectronico: "",
+      password: ""
+    });
 
-    } catch (error) {
 
-      console.error("Error en login:", error);
+    navigate("/dashboard");
 
-      if (error.response?.status === 401) {
-        setError("Correo electrónico o contraseña incorrectos.");
-      } else {
-        setError("No se pudo conectar con el servidor.");
-      }
 
-    } finally {
+  } catch (error) {
 
-      setLoading(false);
+    console.error(
+      "Error en login:",
+      error
+    );
 
-    }
-  };
+
+    setError(
+      error.message ||
+      "No se pudo conectar con el servidor."
+    );
+
+
+  } finally {
+
+    setLoading(false);
+
+  }
+
+};
+
 
   return (
+
     <div className="container">
 
       <div className="card login-card">
+
 
         <div className="icon-box">
           🔐
         </div>
 
-        <h2>Bienvenido</h2>
+
+        <h2>
+          Bienvenido
+        </h2>
+
 
         <p className="subtitle">
           Ingresa tus credenciales para acceder a tu cuenta
         </p>
 
+
         <form onSubmit={handleSubmit}>
 
-          <label>Correo electrónico</label>
+
+          <label>
+            Correo electrónico
+          </label>
+
 
           <input
             type="email"
@@ -101,7 +140,11 @@ export default function Login() {
             onChange={handleChange}
           />
 
-          <label>Contraseña</label>
+
+          <label>
+            Contraseña
+          </label>
+
 
           <input
             type="password"
@@ -111,18 +154,26 @@ export default function Login() {
             onChange={handleChange}
           />
 
+
           {error && (
+
             <p className="error-message">
               {error}
             </p>
+
           )}
+
 
           <div className="row">
 
             <label className="remember">
+
               <input type="checkbox" />
+
               Recordarme
+
             </label>
+
 
             <Link
               to="/forgot-password"
@@ -133,24 +184,37 @@ export default function Login() {
 
           </div>
 
+
           <button
             type="submit"
             disabled={loading}
           >
-            {loading ? "Iniciando sesión..." : "Iniciar sesión"}
+
+            {loading
+              ? "Iniciando sesión..."
+              : "Iniciar sesión"
+            }
+
           </button>
+
 
         </form>
 
+
         <p className="bottom-text">
+
           ¿No tienes cuenta?{" "}
+
           <Link to="/register-role">
             Regístrate
           </Link>
+
         </p>
+
 
       </div>
 
     </div>
+
   );
 }

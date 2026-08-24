@@ -61,15 +61,20 @@ export const registerRequest = async (data) => {
 
 export const forgotPasswordRequest = async (data) => {
 
-  const res = await fetch(`${API_URL}/auth/forgot-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+    const res = await fetch(
+        `${API_URL}/auth/forgot-password`,
+        {
+            method: "POST",
 
-  return handleResponse(res);
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify(data),
+        }
+    );
+
+    return handleResponse(res);
 };
 
 
@@ -79,15 +84,20 @@ export const forgotPasswordRequest = async (data) => {
 
 export const resetPasswordRequest = async (data) => {
 
-  const res = await fetch(`${API_URL}/auth/reset-password`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
+    const res = await fetch(
+        `${API_URL}/auth/reset-password`,
+        {
+            method: "POST",
 
-  return handleResponse(res);
+            headers: {
+                "Content-Type": "application/json",
+            },
+
+            body: JSON.stringify(data),
+        }
+    );
+
+    return handleResponse(res);
 };
 
 

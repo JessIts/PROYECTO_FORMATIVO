@@ -17,6 +17,8 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 
 import ProtectedRoute from "./ProtectedRoute";
 
+import AccessDenied from "../pages/AccessDenied/AccessDenied";
+
 export default function AppRouter() {
 
   return (
@@ -38,6 +40,11 @@ export default function AppRouter() {
               <Dashboard />
             </ProtectedRoute>
           }
+        />
+
+        <Route
+        path="/acceso-denegado"
+        element={<AccessDenied />}
         />
 
         {/* 🔑 RECUPERACIÓN */}

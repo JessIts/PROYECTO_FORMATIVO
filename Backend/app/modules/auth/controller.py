@@ -1,3 +1,9 @@
+# ============================================================
+# app/modules/auth/controller.py
+# ============================================================
+
+from uuid import UUID
+
 from sqlalchemy.orm import Session
 
 from app.modules.auth.service import AuthService
@@ -22,6 +28,22 @@ class AuthController:
             data.password
         )
 
+
+    # ========================================================
+    # USUARIO AUTENTICADO
+    # ========================================================
+
+    @staticmethod
+    def obtener_usuario_actual(
+        db: Session,
+        id_usuario: UUID
+    ):
+        return AuthService.obtener_usuario_actual(
+            db,
+            id_usuario
+        )
+
+
     # ========================================================
     # RECUPERACIÓN DE CONTRASEÑA
     # ========================================================
@@ -35,6 +57,7 @@ class AuthController:
             db,
             correoElectronico
         )
+
 
     # ========================================================
     # RESTABLECER CONTRASEÑA
