@@ -84,6 +84,13 @@ from app.modules.usuario_rol.routes import (
     router as usuario_rol_router
 )
 
+# ============================================================
+# IMPORTACION DE CORS
+# ============================================================
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 
 # ============================================================
 # CREACIÓN DE TABLAS
@@ -124,10 +131,19 @@ app = FastAPI(
     title="Sistema SIHS"
 )
 
+# ============================================================
+# CORS
+# ============================================================
 
-# ============================================================
-# REGISTRO DE ROUTERS
-# ============================================================
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ------------------------------------------------------------
 # Endpoints de usuarios

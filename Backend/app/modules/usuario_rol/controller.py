@@ -18,8 +18,8 @@ class UsuarioRolController:
         data: UsuarioRolCreate
     ):
         return UsuarioRolService.asignar_rol(
-            db,
-            data
+            db=db,
+            data=data
         )
 
     # ============================================================
@@ -32,8 +32,8 @@ class UsuarioRolController:
         id_usuario: UUID
     ):
         return UsuarioRolService.obtener_roles_usuario(
-            db,
-            id_usuario
+            db=db,
+            id_usuario=id_usuario
         )
 
     # ============================================================
@@ -46,8 +46,8 @@ class UsuarioRolController:
         id_rol: UUID
     ):
         return UsuarioRolService.obtener_usuarios_rol(
-            db,
-            id_rol
+            db=db,
+            id_rol=id_rol
         )
 
     # ============================================================
@@ -61,7 +61,7 @@ class UsuarioRolController:
         id_rol: UUID
     ):
         return UsuarioRolService.eliminar_rol(
-            db,
-            id_usuario,
-            id_rol
+            db=db,
+            id_usuario=id_usuario,
+            id_rol=id_rol
         )

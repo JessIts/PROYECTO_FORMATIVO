@@ -59,25 +59,6 @@ def obtener_roles(
 
 
 # ============================================================
-# OBTENER ROL POR UUID
-# ============================================================
-
-@router.get(
-    "/{id_rol}",
-    response_model=RolResponse
-)
-def obtener_rol(
-    id_rol: UUID,
-    db: Session = Depends(get_db),
-    usuario=Depends(require_admin)
-):
-    return RolController.obtener_por_id(
-        db,
-        id_rol
-    )
-
-
-# ============================================================
 # ACTUALIZAR ROL
 # ============================================================
 

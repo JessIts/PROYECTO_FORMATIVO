@@ -27,16 +27,17 @@ router = APIRouter(
 # ============================================================
 
 @router.post(
-    "/asignar"
+    "/asignar_rol"
 )
 def asignar_rol(
     data: UsuarioRolCreate,
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
 ):
-    return UsuarioRolController.asignar(
-        db,
-        data
+
+    return UsuarioRolController.asignar_rol(
+        db=db,
+        data=data
     )
 
 
@@ -52,9 +53,11 @@ def remover_rol(
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
 ):
-    return UsuarioRolController.remover(
-        db,
-        data
+
+    return UsuarioRolController.eliminar_rol(
+        db=db,
+        id_usuario=data.idUsuario,
+        id_rol=data.idRol
     )
 
 
@@ -71,7 +74,8 @@ def obtener_roles_usuario(
     db: Session = Depends(get_db),
     usuario=Depends(require_admin)
 ):
+
     return UsuarioRolController.obtener_roles_usuario(
-        db,
-        id_usuario
+        db=db,
+        id_usuario=id_usuario
     )

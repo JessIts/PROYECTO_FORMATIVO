@@ -1,7 +1,3 @@
-# ============================================================
-# app/modules/auth/routes.py
-# ============================================================
-
 from fastapi import (
     APIRouter,
     Depends
@@ -85,38 +81,18 @@ def login(
         data
     )
 
-
 # ============================================================
-# USUARIO ACTUAL
+# USUARIO AUTENTICADO
 # ============================================================
 
 @router.get(
     "/me",
     response_model=UsuarioResponse
 )
-def me(
+def obtener_usuario_actual(
     usuario=Depends(get_current_user)
 ):
-
     return usuario
-
-
-# ============================================================
-# PRUEBA DE ADMINISTRADOR
-# ============================================================
-
-@router.get(
-    "/admin-test"
-)
-def admin_test(
-    usuario=Depends(require_admin)
-):
-
-    return {
-        "mensaje": "Bienvenido administrador",
-        "usuario": usuario.nombres
-    }
-
 
 # ============================================================
 # SOLICITAR RECUPERACIÓN DE CONTRASEÑA
@@ -132,7 +108,7 @@ def forgot_password(
 
     return AuthController.forgot_password(
         db,
-        data
+        data.correoElectronico
     )
 
 
@@ -150,5 +126,7 @@ def reset_password(
 
     return AuthController.reset_password(
         db,
-        data
+        data.token,
+        data.nuevaPassword
     )
+    

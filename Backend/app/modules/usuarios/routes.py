@@ -4,6 +4,8 @@ from uuid import UUID
 
 from app.database.connection import get_db
 
+from app.core.dependencies import require_admin
+
 from app.modules.usuarios.controller import (
     crear_usuario,
     obtener_usuarios,
@@ -34,7 +36,8 @@ router = APIRouter(
     response_model=list[UsuarioResponse]
 )
 def listar_usuarios(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(require_admin)
 ):
     return obtener_usuarios(db)
 
@@ -63,11 +66,12 @@ def registrar_usuario(
 
 @router.get(
     "/{id_usuario}",
-    response_model=UsuarioResponse
+    response_model=UsuarioResponse,
 )
 def obtener_usuario_por_id(
     id_usuario: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(require_admin)
 ):
     return obtener_usuario(
         id_usuario,
@@ -81,12 +85,13 @@ def obtener_usuario_por_id(
 
 @router.put(
     "/{id_usuario}",
-    response_model=UsuarioResponse
+    response_model=UsuarioResponse,
 )
 def editar_usuario(
     id_usuario: UUID,
     data: UsuarioUpdate,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(require_admin)
 ):
     return actualizar_usuario(
         id_usuario,
@@ -100,11 +105,12 @@ def editar_usuario(
 # ============================================================
 
 @router.delete(
-    "/{id_usuario}"
+    "/{id_usuario}",
 )
 def borrar_usuario(
     id_usuario: UUID,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    usuario=Depends(require_admin)
 ):
     return eliminar_usuario(
         id_usuario,

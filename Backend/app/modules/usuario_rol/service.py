@@ -83,7 +83,7 @@ class UsuarioRolService:
         id_rol: UUID
     ):
 
-        return UsuarioRolRepository.eliminar(
+        return UsuarioRolRepository.eliminar_rol(
             db,
             id_usuario,
             id_rol
